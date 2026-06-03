@@ -1,97 +1,126 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# AI Image Generator
 
-# Getting Started
+A React Native CLI app for generating AI-style images with MVVM architecture, stack navigation, and a polished UI.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Setup Instructions
 
-## Step 1: Start Metro
+### Prerequisites
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Node.js >= 22.11.0
+- Android Studio (Android) and/or Xcode (iOS)
+- React Native environment: [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment)
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### Install dependencies
 
 ```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
+npm install
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+### Start Metro
 
 ```sh
-# Using npm
+npm start
+```
+
+### Run the app
+
+Open a second terminal from the project root:
+
+```sh
+# Android
 npm run android
 
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# iOS — install pods first, then run
+cd ios && pod install && cd ..
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Test credentials
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+| Field    | Example           |
+|----------|-------------------|
+| Email    | `name@email.com`  |
+| Password | `abc123`          |
 
-## Step 3: Modify your app
+Tap the **i** icon next to **Login** for format hints.
 
-Now that you have successfully run the app, let's make changes!
+---
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Architecture Overview
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+This project follows **MVVM** (Model-View-ViewModel):
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+| Layer        | Location        | Responsibility                                      |
+|--------------|-----------------|-----------------------------------------------------|
+| **View**     | `screens/`      | UI only — layout, components, thin navigation wiring |
+| **ViewModel**| `viewmodels/`   | State, validation, business logic via custom hooks   |
+| **Model**    | `utils/`        | Constants, mock data, lightweight `creationsStore`   |
 
-## Congratulations! :tada:
+### Data flow
 
-You've successfully run and modified your React Native App. :partying_face:
+```
+Screen  →  useViewModel()  →  state + handlers
+                ↓
+         components/ (reusable UI)
+                ↓
+         utils/ (constants, store)
+```
 
-### Now what?
+### Key decisions
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- **Navigation** — React Navigation native stack: Login → Home → Generate
+- **State** — `useState` and custom hooks only (no Redux, no Context API)
+- **Shared recent images** — `creationsStore.js` syncs generated items to Home without global state libraries
+- **Login** — `navigation.replace('Home')` so back from Home does not return to Login
+- **Generate** — `navigation.goBack()` returns to Home
 
-# Troubleshooting
+---
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Folder Structure
 
-# Learn More
+```
+AIImageGen/
+├── App.tsx                 # App entry — SafeArea + KeyboardAvoidingView
+├── index.js                # React Native registry
+├── src/
+│   ├── assets/             # Local images (Logo1.jpeg, Logo.png, Logo2–4.jpeg)
+│   ├── components/         # Reusable UI
+│   │   ├── Card.js
+│   │   ├── CategoryCard.js
+│   │   ├── CountBadge.js
+│   │   ├── EmptyState.js
+│   │   ├── HeroCard.js
+│   │   ├── ImageCard.js
+│   │   ├── ImagePreview.js
+│   │   ├── InputField.js
+│   │   ├── PrimaryButton.js
+│   │   ├── SearchBar.js
+│   │   ├── SectionCard.js
+│   │   └── SectionHeader.js
+│   ├── navigation/
+│   │   └── AppNavigator.js # Stack: Login → Home → Generate
+│   ├── screens/
+│   │   ├── LoginScreen.js
+│   │   ├── HomeScreen.js
+│   │   └── GenerateScreen.js
+│   ├── viewmodels/
+│   │   ├── useLoginViewModel.js
+│   │   ├── useHomeViewModel.js
+│   │   └── useGenerateViewModel.js
+│   └── utils/
+│       ├── colors.js       # Soft gray theme palette
+│       ├── constants.js    # Assets, AI categories
+│       ├── creationsStore.js
+│       └── mockData.js
+├── android/                # Android native project
+└── ios/                    # iOS native project
+```
 
-To learn more about React Native, take a look at the following resources:
+---
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Features
+
+- Login with email/password validation and disabled button when invalid
+- Home with search, AI style categories, and recent creations gallery
+- Generate screen with prompt, style picker, and mock image preview
+- Empty state on Home when no images have been created yet
