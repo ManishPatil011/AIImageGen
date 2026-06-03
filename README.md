@@ -8,7 +8,7 @@ A React Native CLI app for generating AI-style images with MVVM architecture, st
 
 - Node.js >= 22.11.0
 - Android Studio (Android) and/or Xcode (iOS)
-- React Native environment: [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment)
+- React Native: 0.85.3
 
 ### Install dependencies
 
